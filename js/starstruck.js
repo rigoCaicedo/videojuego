@@ -26,9 +26,32 @@ var bg;
 
 function create() {
 
+
+    game.add.tileSprite(0, 0, 800, 600, 'starSmall');
+
+    var sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'starBig');
+
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.alpha = 0;
+
+    //  Create our tween. This will fade the sprite to alpha 1 over the duration of 2 seconds
+    var tween = game.add.tween(sprite).to( { alpha: 1 }, 2000, "Linear", true, 0, -1);
+
+    //  And this tells it to yoyo, i.e. fade back to zero again before repeating.
+    //  The 3000 tells it to wait for 3 seconds before starting the fade back.
+tween.yoyo(true, 3000);
+
+
+
+
+//---------------audio--------------------------///
     audio=game.add.audio('vallenato');
     audio.play();
-    alert('estoy saltando');
+    //alert('estoy saltando');
+//--------------------fin audio-------------------------//
+
+
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#000000';
@@ -66,7 +89,11 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
+//------------enemigos------------------//
+    esqueletos = game.add.group();
+    esqueletos.enableBody = true;
+    esqueletos.physicsBodyType = Phaser.Physics.ARCADE;
+//------------------enemigos-------------------//
    
 
 
