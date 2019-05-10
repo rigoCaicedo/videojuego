@@ -11,7 +11,7 @@ function preload() {
     game.load.image('starSmall', 'assets/games/starstruck/star.png');
     game.load.image('starBig', 'assets/games/starstruck/star2.png');
     game.load.image('background', 'assets/games/starstruck/h.jpg');
-
+    game.load.audio('vallenato', 'assets/games/starstruck/vallenato.mp3');
 }
 
 var map;
@@ -26,6 +26,9 @@ var bg;
 
 function create() {
 
+    audio=game.add.audio('vallenato');
+    audio.play();
+    alert('estoy saltando');
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#000000';
