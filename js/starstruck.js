@@ -53,7 +53,7 @@ function create() {
     layer = map.createLayer('Tile Layer 1');
 
     //  Un-comment this on to see the collision tiles
-     layer.debug = true;
+     //layer.debug = true;
 
     layer.resizeWorld();
 
@@ -92,7 +92,7 @@ function create() {
     enemigos = game.add.group();
     enemigos.enableBody = true;
     enemigos.physicsBodyType = Phaser.Physics.ARCADE;
-    for (var x = 0; x < 10; x++)
+    for (var x = 0; x < 30; x++)
         {
             calavera[x] = enemigos.create(game.world.randomX, game.world.randomY,'enemihuesos');
             calavera[x].anchor.setTo(0.5, 0.5);
@@ -213,7 +213,7 @@ function fireBullet () {
 }
 function render () {
 
-     game.debug.text(game.time.physicsElapsed, 32, 32);
+    /* game.debug.text(game.time.physicsElapsed, 32, 32);
      game.debug.body(player);
-     game.debug.bodyInfo(player, 16, 24);
+     game.debug.bodyInfo(player, 16, 24);*/
 }
