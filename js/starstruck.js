@@ -12,6 +12,7 @@ function preload() {
     game.load.image('starBig', 'assets/games/starstruck/star2.png');
     game.load.image('background', 'assets/games/starstruck/h.jpg');
     game.load.audio('vallenato', 'assets/games/starstruck/vallenato.mp3');
+    game.load.image('star', 'assets/games/starstruck/star.png');
 }
 
 var map;
@@ -23,14 +24,16 @@ var jumpTimer = 0;
 var cursors;
 var jumpButton;
 var bg;
-
+var calavera=[];
+var bulletTime = 0;
 function create() {
 
 
 //---------------audio--------------------------///
+/*
     audio=game.add.audio('vallenato');
     audio.play();
-    
+  */  
 //--------------------fin audio-------------------------//
 
 
@@ -50,7 +53,7 @@ function create() {
     layer = map.createLayer('Tile Layer 1');
 
     //  Un-comment this on to see the collision tiles
-    // layer.debug = true;
+     layer.debug = true;
 
     layer.resizeWorld();
 
@@ -71,38 +74,75 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+
+        //  Our bullet group
+    bullets = game.add.group();
+    bullets.enableBody = true;
+    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    bullets.createMultiple(30, 'star');
+    bullets.setAll('anchor.x', 0.5);
+    bullets.setAll('anchor.y', 1);
+    bullets.setAll('outOfBoundsKill', true);
+    bullets.setAll('checkWorldBounds', true);
+
+
 //-----------------<enemigos>------------------//
 
     enemigos = game.add.group();
     enemigos.enableBody = true;
     enemigos.physicsBodyType = Phaser.Physics.ARCADE;
-
-
     for (var x = 0; x < 10; x++)
         {
-            var calavera = enemigos.create(game.world.randomX, game.world.randomY,'enemihuesos');
-            calavera.anchor.setTo(0.5, 0.5);
-            calavera.body.moves = true;
-            calavera.animations.add('leftE', [0, 1, 2, 3,4, 5], 10, true);
-            calavera.body.velocity.x = +150;
-            calavera.animations.play('leftE');
-            //facing = 'leftE';
+            calavera[x] = enemigos.create(game.world.randomX, game.world.randomY,'enemihuesos');
+            calavera[x].anchor.setTo(0.5, 0.5);
+            calavera[x].body.setSize(20, 32, 5, 16);
+            calavera[x].body.moves = true;
+            movimientoEnemigo(calavera[x]);
+
+
         }
 
+    //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
+    var tween = game.add.tween(enemigos).to( { x: 100 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+
+    //  When the tween loops it calls descend
+    tween.onLoop.add(descend, this);
 //------------------</enemigos>-------------------//
 
 }
 
+function movimientoEnemigo(enemigo){
 
+    enemigo.animations.add('leftE', [0, 1, 2, 3,4, 5], 10, true);
+            enemigo.body.velocity.x = +90;
+            enemigo.animations.play('leftE');
+               //facing = 'leftE';
+}
+
+function collisionHandler(player, enemigos){
+    player.kill();
+    enemigos.kill();
+}
+function muertePlayer(player){
+    player.kill();
+}
+function muerteEnemigo(bullets, enemigos){
+    bullets.kill();
+    enemigos.kill();
+}
 function update() {
     bg.tilePosition.y += 3;
     //Colisiones entre elementos del juego
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.collide(enemigos, layer);
-    game.physics.arcade.collide(enemigos, player);
+    //game.physics.arcade.collide(enemigos, bullets);
     game.physics.arcade.collide(enemigos, enemigos);
     player.body.velocity.x = 0;
-
+    if(player.alive){
+        game.physics.arcade.overlap(player, enemigos, muertePlayer, null, this);
+        game.physics.arcade.overlap(bullets, enemigos, muerteEnemigo, null, this);
+    }
     if (cursors.left.isDown)
     {
         player.body.velocity.x = -150;
@@ -123,6 +163,10 @@ function update() {
 
             facing = 'right';
         }
+    }
+    else if (cursors.down.isDown)
+    {
+        fireBullet();
     }
     else
     {
@@ -148,13 +192,28 @@ function update() {
         player.body.velocity.y = -350;
         jumpTimer = game.time.now + 850;
     }
+}
+function fireBullet () {
+
+    //  To avoid them being allowed to fire too fast we set a time limit
+    if (game.time.now > bulletTime)
+    {
+        //  Grab the first bullet we can from the pool
+        bullet = bullets.getFirstExists(false);
+
+        if (bullet)
+        {
+            //  And fire it
+            bullet.reset(player.x, player.y + 8);
+            bullet.body.velocity.x = +400;
+            bulletTime = game.time.now + 200;
+        }
+    }
 
 }
-
 function render () {
 
      game.debug.text(game.time.physicsElapsed, 32, 32);
      game.debug.body(player);
      game.debug.bodyInfo(player, 16, 24);
-
 }
