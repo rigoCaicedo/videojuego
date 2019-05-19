@@ -3,7 +3,7 @@ var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload:
 
 function preload() {
     
-    game.load.tilemap('level1', 'assets/games/starstruck/level1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('level1', 'assets/games/starstruck/level12.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles-1', 'assets/games/starstruck/muroshuesos.png');
     game.load.spritesheet('dude', 'assets/games/starstruck/kori.png', 38, 48);
     game.load.spritesheet('enemihuesos', 'assets/games/starstruck/enemihuesos.png', 66, 56);
@@ -26,14 +26,16 @@ var jumpButton;
 var bg;
 var calavera=[];
 var bulletTime = 0;
+var FireI;
+var FireD;
 function create() {
 
 
 //---------------audio--------------------------///
-/*
+
     audio=game.add.audio('vallenato');
     audio.play();
-  */  
+  
 //--------------------fin audio-------------------------//
 
 
@@ -74,13 +76,14 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
+    FireI = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    FireD = game.input.keyboard.addKey(Phaser.Keyboard.S);
 
         //  Our bullet group
     bullets = game.add.group();
     bullets.enableBody = true;
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(30, 'star');
+    bullets.createMultiple(1, 'star');
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 1);
     bullets.setAll('outOfBoundsKill', true);
@@ -115,7 +118,7 @@ function create() {
 function movimientoEnemigo(enemigo){
 
     enemigo.animations.add('leftE', [0, 1, 2, 3,4, 5], 10, true);
-            enemigo.body.velocity.x = +90;
+            enemigo.body.velocity.x = +100;
             enemigo.animations.play('leftE');
                //facing = 'leftE';
 }
@@ -132,7 +135,7 @@ function muerteEnemigo(bullets, enemigos){
     enemigos.kill();
 }
 function update() {
-    bg.tilePosition.y += 3;
+    bg.tilePosition.y += 1;
     //Colisiones entre elementos del juego
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.collide(enemigos, layer);
@@ -145,6 +148,7 @@ function update() {
     }
     if (cursors.left.isDown)
     {
+    	//fireBulletIzq();
         player.body.velocity.x = -150;
 
         if (facing != 'left')
@@ -155,6 +159,7 @@ function update() {
     }
     else if (cursors.right.isDown)
     {
+    	//fireBulletD();
         player.body.velocity.x = 150;
 
         if (facing != 'right')
@@ -165,8 +170,8 @@ function update() {
         }
     }
     else if (cursors.down.isDown)
-    {
-        fireBullet();
+    {      
+      console.log('se pulsa S')
     }
     else
     {
@@ -192,8 +197,19 @@ function update() {
         player.body.velocity.y = -350;
         jumpTimer = game.time.now + 850;
     }
+
+     if (FireD.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+    {
+    	fireBulletD();
+    }
+
+    if (FireI.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+    {
+    	fireBulletIzq();
+    }
+
 }
-function fireBullet () {
+function fireBulletD() {
 
     //  To avoid them being allowed to fire too fast we set a time limit
     if (game.time.now > bulletTime)
@@ -204,16 +220,37 @@ function fireBullet () {
         if (bullet)
         {
             //  And fire it
-            bullet.reset(player.x, player.y + 8);
+            bullet.reset(player.body.x +16, player.body.y +16);
             bullet.body.velocity.x = +400;
             bulletTime = game.time.now + 200;
         }
     }
 
 }
+
+
+function fireBulletIzq() {
+
+    //  To avoid them being allowed to fire too fast we set a time limit
+    if (game.time.now > bulletTime)
+    {
+        //  Grab the first bullet we can from the pool
+        bullet = bullets.getFirstExists(false);
+
+        if (bullet)
+        {
+            //  And fire it
+            bullet.reset(player.body.x +16, player.body.y +16);
+            bullet.body.velocity.x = -400;
+            bulletTime = game.time.now + 200;
+        }
+    }
+
+}
+
 function render () {
 
-    /* game.debug.text(game.time.physicsElapsed, 32, 32);
+    game.debug.text(game.time.physicsElapsed, 32, 32);
      game.debug.body(player);
-     game.debug.bodyInfo(player, 16, 24);*/
+     game.debug.bodyInfo(player, 16, 24);
 }
