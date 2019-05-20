@@ -33,7 +33,7 @@ function create() {
 
 //---------------audio--------------------------///
 
-    audio=game.add.audio('vallenato');
+    var audio=game.add.audio('vallenato');
     audio.play();
   
 //--------------------fin audio-------------------------//
