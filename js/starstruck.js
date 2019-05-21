@@ -190,7 +190,7 @@ function muertePlayer(player){
     //  The 3000 tells it to wait for 3 seconds before starting the fade back.
     tween.yoyo(true, 3000);
     tween.fixedToCamera = false;
-    vidas=0;
+    game.camera.follow(sprite);
 }
 function muerteEnemigo(bullets, enemigos){
     bullets.kill();
@@ -212,6 +212,8 @@ function victoria(player, meta){
     //  The 3000 tells it to wait for 3 seconds before starting the fade back.
     tween.yoyo(true, 3000);
     tween.fixedToCamera = false;
+    game.camera.follow(sprite);
+
 }
 
 function update() {
