@@ -6,7 +6,7 @@ function preload() {
     game.load.tilemap('level1', 'assets/games/starstruck/level12.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles-1', 'assets/games/starstruck/muroshuesos.png');
     game.load.spritesheet('dude', 'assets/games/starstruck/kori.png', 38, 48);
-    game.load.spritesheet('enemihuesos', 'assets/games/starstruck/enemihuesos.png', 66, 56);
+    game.load.spritesheet('enemihuesos', 'assets/games/starstruck/de.png', 69.8, 57);
     game.load.spritesheet('droid', 'assets/games/starstruck/droid.png', 32, 32);
     game.load.image('starSmall', 'assets/games/starstruck/star.png');
     game.load.image('starBig', 'assets/games/starstruck/star2.png');
@@ -27,6 +27,7 @@ var cursors;
 var jumpButton;
 var bg;
 var calavera=[];
+var animacion=[];
 var bulletTime = 0;
 var FireI;
 var FireD;
@@ -100,11 +101,11 @@ function create() {
 //-----------------------------------------///
 
 //---------------texto--------------------------///
- textoEstado = game.add.text(100,0,'Numero de vidas: '+vidas, { font: '50px Arial', fill: '#99f' }); 
+ /*textoEstado = game.add.text(100,0,'Numero de vidas: '+vidas, { font: '50px Arial', fill: '#99f' }); 
 
 textoEstado.anchor.setTo(0.5, 0.5);
 
- textoEstado.visible = true; 
+ textoEstado.visible = true; */
 //------------------------------------------------///
 
 //---------------teclado--------------------------///
@@ -112,7 +113,7 @@ textoEstado.anchor.setTo(0.5, 0.5);
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     FireI = game.input.keyboard.addKey(Phaser.Keyboard.A);
-    FireD = game.input.keyboard.addKey(Phaser.Keyboard.S);
+    Fire = game.input.keyboard.addKey(Phaser.Keyboard.S);
 //------------------------------------------------///
 
 
@@ -139,9 +140,13 @@ textoEstado.anchor.setTo(0.5, 0.5);
             calavera[x].anchor.setTo(0.5, 0.5);
             calavera[x].body.setSize(20, 32, 5, 16);
             calavera[x].body.moves = true;
-            movimientoEnemigo(calavera[x]);
+           // movimientoEnemigo(calavera[x]);
+        }
 
-
+    for (var x = 0; x < numeroEnemigos; x++)
+        {
+            calavera[x].animations.add('left'+x, [0, 1, 2, 3,4, 5, 6], 10, true);
+            calavera[x].animations.add('derecha'+x, [7, 8, 9, 10,11, 12, 13, 14], 10, true);
         }
 
     //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
@@ -157,10 +162,14 @@ textoEstado.anchor.setTo(0.5, 0.5);
 
 function movimientoEnemigo(enemigo){
 
-    enemigo.animations.add('leftE', [0, 1, 2, 3,4, 5], 10, true);
-            enemigo.body.velocity.x = +100;
+    enemigo.animations.add('leftE', [0, 1, 2, 3,4, 5, 6], 10, true);
+    enemigo.animations.add('derechaD', [7, 8, 9, 10,11, 12, 13, 14], 10, true);
+           if( enemigo.body.velocity.x >0){
             enemigo.animations.play('leftE');
-               //facing = 'leftE';
+        }else{
+            enemigo.animations.play('leftD');
+        }
+        
 }
 
 function collisionHandler(player, enemigos){
@@ -207,6 +216,21 @@ function victoria(player, meta){
 
 function update() {
 
+        for (var x = 0; x < numeroEnemigos; x++)
+        {
+            //calavera[x].animations.add('leftE', [0, 1, 2, 3,4, 5, 6], 10, true);
+            //calavera[x].animations.add('leftD', [7, 8, 9, 10,11, 12, 13, 14], 10, true);
+            if(calavera[x].alive){
+                if(calavera[x].body.velocity.x <0){
+                    calavera[x].animations.play('derecha'+x);
+                }else{
+                    calavera[x].animations.play('left'+x);
+                }
+
+            }
+        
+
+        }
     bg.tilePosition.y += 1;
     //Colisiones entre elementos del juego
     game.physics.arcade.collide(player, layer);
@@ -216,6 +240,16 @@ function update() {
     //game.physics.arcade.collide(player, meta);
     game.physics.arcade.collide(layer, meta);
     player.body.velocity.x = 0;
+
+if(player.alive){
+if(cursors.right.isDown && Fire.isDown && game.time.now > jumpTimer){
+        fireBulletD();
+    }
+    if(cursors.left.isDown && Fire.isDown && game.time.now > jumpTimer){
+        fireBulletIzq();
+    }
+
+}
     if(player.alive){
         game.physics.arcade.overlap(player, enemigos, muertePlayer, null, this);
 
@@ -273,7 +307,7 @@ function update() {
         player.body.velocity.y = -350;
         jumpTimer = game.time.now + 850;
     }
-
+/*
      if (FireD.isDown && player.body.onFloor() && game.time.now > jumpTimer)
     {
     	fireBulletD();
@@ -282,7 +316,7 @@ function update() {
     if (FireI.isDown && player.body.onFloor() && game.time.now > jumpTimer)
     {
     	fireBulletIzq();
-    }
+    }*/
 
 }
 function fireBulletD() {
@@ -333,6 +367,11 @@ function render () {
      game.debug.body(player);
      game.debug.bodyInfo(player, 16, 24);*/
 }
-function ganador(){
 
+
+function sleep(miliseconds) {
+   var currentTime = new Date().getTime();
+
+   while (currentTime + miliseconds >= new Date().getTime()) {
+   }
 }
