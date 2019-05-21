@@ -5,7 +5,7 @@ function preload() {
 
     game.load.image('title', 'assets/games/inicio/catastrophi.png');
 
-    game.load.image('button', 'assets/games/inicio/star2.png', 22, 22);
+    game.load.image('button', 'assets/games/inicio/boton1.png', 11, 5);
     game.load.bitmapFont('nokia', 'assets/games/inicio/nokia16black.png', 'assets/games/inicio/nokia16black.xml');
     // game.load.audio('sfx', [ 'assets/audio/SoundEffects/fx_mixdown.mp3', 'assets/audio/SoundEffects/fx_mixdown.ogg' ]);
     game.load.audio('sfx', 'assets/games/inicio/audio/fx_mixdown.ogg');
@@ -38,15 +38,16 @@ function create() {
 	fx.addMarker('squit', 19, 0.3);
 
 	//	Make some buttons to trigger the sounds
-	makeButton('alien death', 600, 100);
-	makeButton('boss hit', 600, 140);
-	makeButton('escape', 600, 180);
+	makeButton('Iniciar', 600, 100);
+	/*
+	makeButton('boss hit', 600, 180);
+	makeButton('escape', 600, 260);
 	makeButton('meow', 600, 220);
 	makeButton('numkey', 600, 260);
 	makeButton('ping', 600, 300);
 	makeButton('death', 600, 340);
 	makeButton('shot', 600, 380);
-	makeButton('squit', 600, 420);
+	makeButton('squit', 600, 420);*/
 
 }
 
@@ -54,10 +55,10 @@ function makeButton(name, x, y) {
 
     var button = game.add.button(x, y, 'button', click, this, 0, 1, 2);
     button.name = name;
-    button.scale.set(2, 1.5);
+    button.scale.set(0.3, 0.3);
     button.smoothed = false;
 
-    var text = game.add.bitmapText(x, y + 7, 'nokia', name, 16);
+    var text = game.add.bitmapText(x, y + 54, 'nokia', name, 16);
     text.x += (button.width / 2) - (text.textWidth / 2);
 
 }
@@ -85,6 +86,7 @@ function mostrarAviso(){
 }
 function rediret(){
 		//window.location.href = "https://www.tutorialrepublic.com/"
-		window.location.href = "file:///C:/Users/Rigo/Documents/NetBeansProjects/actualizado/videojuego/index.html"
+		window.location.href = "http://caicedo2k18.000webhostapp.com/labatalladelosmundos.html"
+		//window.location.href = "file:///C:/Users/Rigo/Documents/NetBeansProjects/actualizado/videojuego/index.html"
 		
 }

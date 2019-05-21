@@ -13,6 +13,8 @@ function preload() {
     game.load.image('background', 'assets/games/starstruck/h.jpg');
     game.load.audio('vallenato', 'assets/games/starstruck/vallenato.mp3');
     game.load.image('star', 'assets/games/starstruck/star.png');
+    game.load.image('vencedor', 'assets/games/starstruck/ganador.png');
+    game.load.image('fallido', 'assets/games/starstruck/gameov.png');
 }
 
 var map;
@@ -28,8 +30,18 @@ var calavera=[];
 var bulletTime = 0;
 var FireI;
 var FireD;
-function create() {
+var puntaje=0;
+var puntajeTexto;
+var vidas=3;
+var textoEstado;
+var numeroEnemigos=50;
+var meta;
 
+function ganador(){
+    bg = game.add.tileSprite(0, 0, 1200, 600, 'vencedor');
+    bg.fixedToCamera = true;
+}
+function create() {
 
 //---------------audio--------------------------///
 
@@ -38,7 +50,7 @@ function create() {
   
 //--------------------fin audio-------------------------//
 
-
+//---------------background--------------------------///
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#000000';
@@ -60,8 +72,10 @@ function create() {
     layer.resizeWorld();
 
     game.physics.arcade.gravity.y = 250;
+//-----------------------------------------///
 
-    player = game.add.sprite(120, 100, 'dude');
+//---------------jugador--------------------------///
+            player = game.add.sprite(120, 100, 'dude');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.bounce.y = 0.2;
@@ -74,16 +88,39 @@ function create() {
 
     game.camera.follow(player);
 
+
+    meta = game.add.sprite(630, 976, 'starBig');
+    game.physics.enable(meta, Phaser.Physics.ARCADE);
+
+    meta.body.bounce.y = 0.2;
+    meta.body.collideWorldBounds = true;
+    meta.body.setSize(20, 32, 5, 16);
+    meta.anchor.setTo(0.5, 0.5)
+
+//-----------------------------------------///
+
+//---------------texto--------------------------///
+ textoEstado = game.add.text(100,0,'Numero de vidas: '+vidas, { font: '50px Arial', fill: '#99f' }); 
+
+textoEstado.anchor.setTo(0.5, 0.5);
+
+ textoEstado.visible = true; 
+//------------------------------------------------///
+
+//---------------teclado--------------------------///
+
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     FireI = game.input.keyboard.addKey(Phaser.Keyboard.A);
     FireD = game.input.keyboard.addKey(Phaser.Keyboard.S);
+//------------------------------------------------///
+
 
         //  Our bullet group
     bullets = game.add.group();
     bullets.enableBody = true;
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(1, 'star');
+    bullets.createMultiple(5, 'star');
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 1);
     bullets.setAll('outOfBoundsKill', true);
@@ -95,7 +132,8 @@ function create() {
     enemigos = game.add.group();
     enemigos.enableBody = true;
     enemigos.physicsBodyType = Phaser.Physics.ARCADE;
-    for (var x = 0; x < 30; x++)
+    
+    for (var x = 0; x < numeroEnemigos; x++)
         {
             calavera[x] = enemigos.create(game.world.randomX, game.world.randomY,'enemihuesos');
             calavera[x].anchor.setTo(0.5, 0.5);
@@ -113,6 +151,8 @@ function create() {
     tween.onLoop.add(descend, this);
 //------------------</enemigos>-------------------//
 
+
+
 }
 
 function movimientoEnemigo(enemigo){
@@ -129,22 +169,58 @@ function collisionHandler(player, enemigos){
 }
 function muertePlayer(player){
     player.kill();
+    var sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'fallido');
+
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.alpha = 0;
+
+    //  Create our tween. This will fade the sprite to alpha 1 over the duration of 2 seconds
+    var tween = game.add.tween(sprite).to( { alpha: 1 }, 2000, "Linear", true, 0, -1);
+
+    //  And this tells it to yoyo, i.e. fade back to zero again before repeating.
+    //  The 3000 tells it to wait for 3 seconds before starting the fade back.
+    tween.yoyo(true, 3000);
+    tween.fixedToCamera = false;
+    vidas=0;
 }
 function muerteEnemigo(bullets, enemigos){
     bullets.kill();
     enemigos.kill();
 }
+function victoria(player, meta){
+    player.kill();
+    meta.kill();
+
+    var sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'vencedor');
+
+    sprite.anchor.setTo(0.5, 0.5);
+    sprite.alpha = 0;
+
+    //  Create our tween. This will fade the sprite to alpha 1 over the duration of 2 seconds
+    var tween = game.add.tween(sprite).to( { alpha: 1 }, 2000, "Linear", true, 0, -1);
+
+    //  And this tells it to yoyo, i.e. fade back to zero again before repeating.
+    //  The 3000 tells it to wait for 3 seconds before starting the fade back.
+    tween.yoyo(true, 3000);
+    tween.fixedToCamera = false;
+}
+
 function update() {
+
     bg.tilePosition.y += 1;
     //Colisiones entre elementos del juego
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.collide(enemigos, layer);
     //game.physics.arcade.collide(enemigos, bullets);
-    game.physics.arcade.collide(enemigos, enemigos);
+    //game.physics.arcade.collide(enemigos, enemigos);
+    //game.physics.arcade.collide(player, meta);
+    game.physics.arcade.collide(layer, meta);
     player.body.velocity.x = 0;
     if(player.alive){
         game.physics.arcade.overlap(player, enemigos, muertePlayer, null, this);
+
         game.physics.arcade.overlap(bullets, enemigos, muerteEnemigo, null, this);
+        game.physics.arcade.overlap(player, meta, victoria, null, this);
     }
     if (cursors.left.isDown)
     {
@@ -248,9 +324,15 @@ function fireBulletIzq() {
 
 }
 
+function crearJugador(){
+
+}
 function render () {
 
-    game.debug.text(game.time.physicsElapsed, 32, 32);
+    /*game.debug.text(game.time.physicsElapse, 32, 32);
      game.debug.body(player);
-     game.debug.bodyInfo(player, 16, 24);
+     game.debug.bodyInfo(player, 16, 24);*/
+}
+function ganador(){
+
 }
