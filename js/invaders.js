@@ -12,6 +12,7 @@ function preload() {
     game.load.image('starfield', 'assets/games/invaders/starfield.png');
     game.load.image('background', 'assets/games/starstruck/background2.png');
 
+
 }
 
 var player;
@@ -98,7 +99,7 @@ function create() {
 
     //  And some controls to play the game with
     cursors = game.input.keyboard.createCursorKeys();
-    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.down);
     
 }
 
