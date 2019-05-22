@@ -9,12 +9,15 @@ function preload() {
     game.load.bitmapFont('nokia', 'assets/games/inicio/nokia16black.png', 'assets/games/inicio/nokia16black.xml');
     // game.load.audio('sfx', [ 'assets/audio/SoundEffects/fx_mixdown.mp3', 'assets/audio/SoundEffects/fx_mixdown.ogg' ]);
     game.load.audio('sfx', 'assets/games/inicio/audio/fx_mixdown.ogg');
+    game.load.audio('intro', 'assets/games/inicio/intro.mp3');
 
 }
 
 var fx;
 
 function create() {
+	var audio=game.add.audio('intro');
+    audio.play();
 
 	game.add.image(0, 0, 'title');
 
