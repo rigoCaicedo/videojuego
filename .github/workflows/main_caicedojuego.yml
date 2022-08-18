@@ -56,5 +56,5 @@ jobs:
         with:
           app-name: 'caicedojuego'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_941549EB600143EDA5939E143909CEFD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_BB6118927CAB482C8365B2F1A7F9A85D }}
           package: .
