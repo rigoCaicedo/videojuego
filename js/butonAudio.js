@@ -89,7 +89,7 @@ function mostrarAviso(){
 }
 function rediret(){
 		//window.location.href = "file:///C:/Users/ADMON/Documents/NetBeansProjects/videojuego/labatalladelosmundos.html"
-		window.location.href = "http://caicedo2k18.000webhostapp.com/labatalladelosmundos.html"
+		window.location.href = "labatalladelosmundos.html"
 		//window.location.href = "file:///C:/Users/Rigo/Documents/NetBeansProjects/actualizado/videojuego/index.html"
 		
 }
